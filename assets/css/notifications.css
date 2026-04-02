@@ -1,0 +1,275 @@
+/* ===================================
+   نظام الإشعارات والتنبيهات
+   Notifications System
+   =================================== */
+
+/* حاوية الإشعارات */
+.notification-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    width: 100%;
+    pointer-events: none;
+}
+
+/* بطاقة الإشعار */
+.notification {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    pointer-events: all;
+    animation: slideInRight 0.4s ease-out;
+    transition: all 0.3s ease;
+    border-left: 5px solid;
+}
+
+/* تأثير الظهور */
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* تأثير الاختفاء */
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.notification.hiding {
+    animation: slideOutRight 0.4s ease-out forwards;
+}
+
+/* أيقونة الإشعار */
+.notification-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* محتوى الإشعار */
+.notification-content {
+    flex: 1;
+    direction: rtl;
+    text-align: right;
+}
+
+.notification-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #333;
+    direction: rtl;
+    text-align: right;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+    direction: rtl;
+    text-align: right;
+}
+
+/* زر الإغلاق */
+.notification-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.notification-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #333;
+    transform: rotate(90deg);
+}
+
+/* شريط التقدم */
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 0 10px;
+    animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+/* ===================================
+   أنواع الإشعارات
+   =================================== */
+
+/* إشعار النجاح */
+.notification.success {
+    border-left-color: #10b981;
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.1), white);
+}
+
+.notification.success .notification-icon {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.notification.success .notification-progress {
+    background: #10b981;
+}
+
+/* إشعار الخطأ */
+.notification.error {
+    border-left-color: #ef4444;
+    background: linear-gradient(to right, rgba(239, 68, 68, 0.1), white);
+}
+
+.notification.error .notification-icon {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.notification.error .notification-progress {
+    background: #ef4444;
+}
+
+/* إشعار التحذير */
+.notification.warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.1), white);
+}
+
+.notification.warning .notification-icon {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.notification.warning .notification-progress {
+    background: #f59e0b;
+}
+
+/* إشعار المعلومات */
+.notification.info {
+    border-left-color: #3b82f6;
+    background: linear-gradient(to right, rgba(59, 130, 246, 0.1), white);
+}
+
+.notification.info .notification-icon {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.notification.info .notification-progress {
+    background: #3b82f6;
+}
+
+/* ===================================
+   تأثيرات Hover
+   =================================== */
+
+.notification:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+}
+
+.notification:hover .notification-progress {
+    animation-play-state: paused;
+}
+
+/* ===================================
+   للشاشات الصغيرة
+   =================================== */
+
+@media (max-width: 768px) {
+    .notification-container {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .notification {
+        padding: 12px 16px;
+    }
+    
+    .notification-icon {
+        font-size: 24px;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .notification-title {
+        font-size: 14px;
+    }
+    
+    .notification-message {
+        font-size: 13px;
+    }
+}
+
+/* ===================================
+   للوضع الليلي (اختياري)
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+    .notification {
+        background: #1f2937;
+    }
+    
+    .notification-title {
+        color: #f3f4f6;
+    }
+    
+    .notification-message {
+        color: #d1d5db;
+    }
+    
+    .notification-close {
+        color: #9ca3af;
+    }
+    
+    .notification-close:hover {
+        color: #f3f4f6;
+    }
+}

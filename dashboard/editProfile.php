@@ -1,0 +1,510 @@
+<?php 
+require_once "../includes/auth_check.php";
+requireLogin("../login.php");
+
+include "../includes/conn.php"; 
+include "../includes/indexHeader.php"; 
+?>
+
+<body>
+  <?php include "../includes/indexNavbar.php"; ?>`n  `n  <!-- Notification Display -->`n  <?php include "../includes/notification_display.php" ?>`n
+
+  <div class="dashboard-container">
+    <?php include "./dashboardSidebar.php"; ?>
+    <div class="dashboard-inner-container">
+      <div class="edit-jobseeker-profile-content-container">
+        <?php if (($_SESSION['role_id']) == 1) :
+          $id_user = intval($_SESSION['id_user']);
+          $sql = "select * from users where id_user=?";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("i", $id_user);
+          $stmt->execute();
+          $query = $stmt->get_result();
+          $row = $query->fetch_assoc();
+
+          // states info
+          $state_id = $row['state_id'];
+          $sql1 = "SELECT * from states where id = '$state_id'";
+          $query1 = $conn->query($sql1);
+          $row1 = $query1->fetch_assoc();
+
+          // cities info
+          $city_id = $row['city_id'];
+          $sql2 = "SELECT * from districts_or_cities where id = '$city_id'";
+          $query2 = $conn->query($sql2);
+          $row2 = $query2->fetch_assoc();
+
+
+          // education info
+          $education_id = $row['education_id'];
+          $sql4 = "SELECT * from education where id='$education_id'";
+          $query4 = $conn->query($sql4);
+          $row4 = $query4->fetch_assoc();
+        ?>
+          <div class="edit-profile-content-container-left-side">
+            <div class="headline">
+              <h3>تفاصيل ملفي الشخصي</h3>
+            </div>
+            <div class="change-details-container">
+              <div class="change-image-container">
+                <?php if ($row['profile_pic'] != '') :
+                ?>
+                  <img class="profile-pic" src="../assets/images/<?php echo $row['profile_pic'] ?>" alt="" />
+                <?php else : ?>
+                  <img class="profile-pic" src="../assets/images/user.png" alt="" />
+                <?php endif; ?>
+              </div>
+              <form method="post" class="change-image-form" action="../process/changePic.php" enctype="multipart/form-data">
+                <input class="file-upload" type="file" name="picture" accept="image/*">
+                <button type="submit" class="btn btn-secondary" name="myPic">تغيير الصورة الشخصية</button>
+              </form>
+            </div>
+            <div class="edit-details-form">
+              <form action="../process/changeProfile.php" method="post">
+                <div class="input-group">
+                  <label for="fullName">الاسم الكامل</label>
+                  <input type="text" name="fullname" value="<?php echo $row['fullname']; ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="email">البريد الإلكتروني</label>
+                  <input type="email" name="email" value="<?php echo $row['email'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="about">نبذة عني</label>
+                  <textarea name="aboutme" cols="30" rows="10" placeholder="اكتب عن نفسك..." required><?php echo $row['aboutme'] ?></textarea>
+                </div>
+                <div class="input-group">
+                  <label for="headline">اللقب الوظيفي</label>
+                  <input type="text" name="headline" value="<?php echo $row['headline'] ?>" placeholder="المسمى الوظيفي مثال: مهندس برمجيات" required>
+                </div>
+                <div class="input-group">
+                  <label for="phoneNumber">رقم الهاتف</label>
+                  <input type="text" name="phoneno" placeholder="أدخل رقم هاتفك..." value="<?php echo $row['contactno'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="dateOfBirth">تاريخ الميلاد</label>
+                  <input type="date" name="dob" value="<?php echo $row['dob'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="gender">الجنس</label>
+                  <input type="text" name="gender" placeholder="أدخل جنسك..." value="<?php echo $row['gender'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="divisionOrState">القطاع / الولاية</label>
+                  <div class="select-container">
+                    <select id="select-category" name="region" required>
+                      <?php
+                      if ($state_id !== null && $state_id != 0) {
+                        echo '<option value="' . $state_id . '" selected>' . $row1['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر القطاع/الولاية</option>';
+                      }
+                      $divisionSql = "SELECT * from states";
+                      $divisionQuery = $conn->query($divisionSql);
+                      while ($division = $divisionQuery->fetch_assoc()) {
+                      ?>
+                        <option value="<?php echo $division['id'] ?>"><?php echo $division['name'] ?></option>
+                      <?php } ?>
+                    </select>
+                    <span class="custom-arrow"></span>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="cityOrDistrict">المدينة / المنطقة</label>
+                  <div class="select-container">
+                    <select id="select-category" name="city" required>
+                      <?php
+                      if ($city_id !== null && $city_id != 0) {
+                        echo '<option value="' . $city_id . '" selected>' . $row2['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر المنطقة/المدينة</option>';
+                      }
+                      $districtOrCitySql = "SELECT * from districts_or_cities";
+                      $districtOrCityQuery = $conn->query($districtOrCitySql);
+                      while ($districtOrCity = $districtOrCityQuery->fetch_assoc()) {
+                      ?>
+                        <option value="<?php echo $districtOrCity['id'] ?>"><?php echo $districtOrCity['name'] ?></option>
+                      <?php } ?>
+                    </select>
+                    <span class="custom-arrow"></span>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="residentialAddress">العنوان السكني</label>
+                  <input type="text" name="address" placeholder="أدخل عنوانك السكني..." value="<?php echo $row['address'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="highesteducation">أعلى مؤهل علمي</label>
+                  <div class="select-container">
+                    <select id="select-category" name="education">
+                      <?php
+                      if ($education_id !== null && $education_id != 0) {
+                        echo '<option value="' . $education_id . '" selected>' . $row4['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر المؤهل...</option>';
+                      }
+                      $educationSql = "SELECT * from education";
+                      $educationQuery = $conn->query($educationSql);
+                      while ($education = $educationQuery->fetch_assoc()) {
+                      ?>
+                        <option value="<?php echo $education['id'] ?>"><?php echo $education['name'] ?></option>
+                      <?php } ?>
+                    </select>
+                    <span class="custom-arrow"></span>
+                  </div>
+                </div>
+                <!-- <div class="input-group">
+                  <label for="careerIndustry">مجال العمل</label>
+                  <div class="select-container">
+                    <select id="select-category" name="career">
+                      <?php
+                      if ($industry_id !== null && $industry_id != 0) {
+                        echo '<option value="' . $industry_id . '" selected>' . $row4['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر المجال...</option>';
+                      }
+                      $jobCategorySql = "SELECT * from industry";
+                      $jobCategoryQuery = $conn->query($jobCategorySql);
+                      while ($jobCategory = $jobCategoryQuery->fetch_assoc()) {
+                      ?>
+                        <option value="<?php echo $jobCategory['id'] ?>"><?php echo $jobCategory['name'] ?></option>
+                      <?php } ?>
+                    </select>
+                    <span class="custom-arrow"></span>
+                  </div>
+                </div> -->
+                <div class=" input-group">
+                  <label for="skills">المهارات</label>
+                  <textarea name="skills" cols="30" rows="5" placeholder="اذكر مهاراتك..." required><?php echo $row['skills']; ?></textarea>
+                </div>
+                <div class="button-container">
+                  <button type="submit" name="myProfile" class="btn btn-secondary">حفظ التغييرات</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="edit-profile-content-container-right-side">
+
+            <div class="password-container">
+              <div class="headline">
+                <h3>تغيير كلمة المرور</h3>
+              </div>
+              <div class="change-password-container">
+                <form method="post" action="../process/changePassword.php">
+                  <div class="input-group">
+                    <label for="new-password">كلمة المرور الجديدة</label>
+                    <input name="newPassword" type="password" minlength="6" placeholder="كلمة المرور الجديدة" required>
+                  </div>
+                  <div class="input-group">
+                    <label for="confirm-newPassword">تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" minlength="6" placeholder="تأكيد كلمة المرور الجديدة" required>
+                  </div>
+                  <button type="submit" name="myPassword" class="btn btn-secondary">تغيير كلمة المرور</button>
+                </form>
+              </div>
+            </div>
+            <div class="deactivate-container">
+              <div class="headline">
+                <h3>إلغاء تنشيط الحساب</h3>
+              </div>
+              <div class="deactivate-button-container">
+                <form action="../process/deactivate.php" method="post">
+                  <div class="button-container">
+                    <button type="submit" name="userProfile" class="btn btn-secondary">إلغاء تنشيط الحساب</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <div class="edit-company-profile-content-container">
+        <?php if (($_SESSION['role_id']) == 2) :
+          $id_company = $_SESSION['id_company'];
+          $sql = "select * from company where id_company='$id_company'";
+          $query = $conn->query($sql);
+          $row = $query->fetch_assoc();
+
+          // states info
+          $state_id = $row['state_id'];
+          $sql1 = "SELECT * from states where id = '$state_id'";
+          $query1 = $conn->query($sql1);
+          $row1 = $query1->fetch_assoc();
+
+          // cities info
+          $city_id = $row['city_id'];
+          $sql2 = "SELECT * from districts_or_cities where id = '$city_id'";
+          $query2 = $conn->query($sql2);
+          $row2 = $query2->fetch_assoc();
+
+          //getting industry info
+          $industry_id = $row['industry_id'];
+          $sql3 =  "SELECT * FROM industry WHERE id = '$industry_id'";
+          $query3 = $conn->query($sql3);
+          $row3 = $query3->fetch_assoc();
+
+          // education info
+          // $education_id = $row['education_id'];
+          // $sql4 = "SELECT * from education where id='$education_id'";
+          // $query4 = $conn->query($sql4);
+          // $row4 = $query4->fetch_assoc();
+        ?>
+          <div class="edit-profile-content-container-left-side">
+            <div class="headline">
+              <h3>تفاصيل الملف الشخصي</h3>
+            </div>
+            <div class="change-details-container">
+              <div class="change-image-container">
+                <?php if ($row['profile_pic'] != '') :
+                ?>
+                  <img class="profile-pic" src="../assets/images/<?php echo $row['profile_pic'] ?>" alt="" />
+                <?php else :
+                ?>
+                  <img class="profile-pic" src="../assets/images/user.png" alt="" />
+                <?php endif;
+                ?>
+              </div>
+              <form method="post" class="change-image-form" action="../process/changePic.php" enctype="multipart/form-data">
+                <input class="file-upload" type="file" name="picture" accept="image/*">
+                <button type="submit" class="btn btn-secondary" name="companyPic">تغيير الصورة الشخصية</button>
+              </form>
+            </div>
+            <div class="edit-details-form">
+              <form action="../process/changeProfile.php" method="post">
+                <div class="input-group">
+                  <label for="fullName">اسم الشركة</label>
+                  <input type="text" name="companyname" value="<?php echo $row['companyname']; ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="email">البريد الإلكتروني</label>
+                  <input type="email" name="email" value="<?php echo $row['email'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="about">نبذة عن الشركة</label>
+                  <textarea name="aboutme" cols="30" rows="10" required><?php echo $row['aboutme'] ?></textarea>
+                </div>
+                <div class="input-group">
+                  <label for="industry">الصناعة</label>
+                  <div class="select-container">
+                    <select id="select-category" name="industry" required>
+                      <?php
+                      if ($industry_id !== null && $industry_id != 0) {
+                        echo '<option value="' . $industry_id . '" selected>' . $row1['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر فئة الوظيفة</option>';
+                      }
+                      if ($industry_id !== null) {
+                        echo '<option value="' . $industry_id . '" selected>' . $row3['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر الصناعة</option>';
+                      }
+                      $industrySql = "SELECT * from industry";
+                      $industryQuery = $conn->query($industrySql);
+                      while ($industry = $industryQuery->fetch_assoc()) {
+                      ?>
+                        <option value="<?php echo $industry['id'] ?>"><?php echo $industry['name'] ?></option>
+                      <?php } ?>
+                    </select>
+                    <span class="custom-arrow"></span>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="phoneNumber">رقم الهاتف</label>
+                  <input type="text" name="phoneno" value="<?php echo $row['contactno'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="dateOfBirth">تاريخ التأسيس</label>
+                  <input type="date" name="esta_date" value="<?php echo $row['esta_date'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="employees">عدد الموظفين</label>
+                  <input type="number" name="empno" value="<?php echo $row['empno'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="divisionOrState">القطاع / الولاية</label>
+                  <div class="select-container">
+                    <select id="select-category" name="region" required>
+                      <?php
+                      if ($state_id !== null && $state_id != 0) {
+                        echo '<option value="' . $state_id . '" selected>' . $row1['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر القطاع/الولاية</option>';
+                      }
+                      $divisionSql = "SELECT * from states";
+                      $divisionQuery = $conn->query($divisionSql);
+                      while ($division = $divisionQuery->fetch_assoc()) {
+                      ?>
+                        <option value="<?php echo $division['id'] ?>"><?php echo $division['name'] ?></option>
+                      <?php } ?>
+                    </select>
+                    <span class="custom-arrow"></span>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="cityOrDistrict">المدينة / المنطقة</label>
+                  <div class="select-container">
+                    <select id="select-category" name="city" required>
+                      <?php
+                      if ($city_id !== null && $city_id != 0) {
+                        echo '<option value="' . $city_id . '" selected>' . $row2['name'] . '</option>';
+                      } else {
+                        echo '<option value="">اختر المنطقة/المدينة</option>';
+                      }
+                      $districtOrCitySql = "SELECT * from districts_or_cities";
+                      $districtOrCityQuery = $conn->query($districtOrCitySql);
+                      while ($districtOrCity = $districtOrCityQuery->fetch_assoc()) {
+                      ?>
+                        <option value="<?php echo $districtOrCity['id'] ?>"><?php echo $districtOrCity['name'] ?></option>
+                      <?php } ?>
+                    </select>
+                    <span class="custom-arrow"></span>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="residentialAddress">عنوان المكتب</label>
+                  <input type="text" name="address" value="<?php echo $row['address'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="websitelink">رابط الموقع الإلكتروني</label>
+                  <input type="text" name="website" value="<?php echo $row['website'] ?>" required>
+                </div>
+                <div class="button-container">
+                  <button type="submit" name="companyProfile" class="btn btn-secondary">حفظ التغييرات</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="edit-profile-content-container-right-side">
+            <div class="password-container">
+              <div class="headline">
+                <h3>تغيير كلمة المرور</h3>
+              </div>
+              <div class="change-password-container">
+                <form method="post" action="../process/changePassword.php">
+                  <div class="input-group">
+                    <label for="new-password">كلمة المرور الجديدة</label>
+                    <input name="newPassword" type="password" minlength="6" placeholder="كلمة المرور الجديدة" required>
+                  </div>
+                  <div class="input-group">
+                    <label for="confirm-newPassword">تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" placeholder="تأكيد كلمة المرور الجديدة" minlength="6" required>
+                  </div>
+                  <button type="submit" name="companyPassword" class="btn btn-secondary">تغيير كلمة المرور</button>
+                </form>
+              </div>
+            </div>
+            <div class="deactivate-container">
+              <div class="headline">
+                <h3>إلغاء تنشيط الحساب</h3>
+              </div>
+              <div class="deactivate-button-container">
+                <form action="../process/deactivate.php" method="post">
+                  <div class="button-container">
+                    <button type="submit" name="companyProfile" class="btn btn-secondary">إلغاء تنشيط الحساب</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+      <div class="edit-jobseeker-profile-content-container">
+        <?php if (($_SESSION['role_id']) == 3) :
+          $id_admin = $_SESSION['id_admin'];
+          // getting the job details
+          $sql = "SELECT * FROM admin WHERE id_admin='$id_admin'";
+          $query = $conn->query($sql);
+          $row = $query->fetch_assoc();
+
+        ?>
+          <div class="edit-profile-content-container-left-side">
+            <div class="headline">
+              <h3>تفاصيل ملف المشرف</h3>
+            </div>
+            <div class="change-details-container">
+              <div class="change-image-container">
+                <?php if ($row['profile_pic'] != '') :
+                ?>
+                  <img class="profile-pic" src="../assets/images/<?php echo $row['profile_pic'] ?>" alt="" />
+                <?php else : ?>
+                  <img class="profile-pic" src="../assets/images/user.png" alt="" />
+                <?php endif; ?>
+              </div>
+              <form method="post" class="change-image-form" action="../process/changePic.php" enctype="multipart/form-data">
+                <input class="file-upload" type="file" name="picture" accept="image/*">
+                <button type="submit" class="btn btn-secondary" name="aPic">تغيير الصورة الشخصية</button>
+              </form>
+            </div>
+            <div class="edit-details-form">
+              <form action="../process/changeProfile.php" method="post">
+                <div class="input-group">
+                  <label for="fullName">الاسم الكامل</label>
+                  <input type="text" name="fullname" value="<?php echo $row['fullname']; ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="email">البريد الإلكتروني</label>
+                  <input type="email" name="email" value="<?php echo $row['email'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="phoneNumber">رقم الهاتف</label>
+                  <input type="text" name="phoneno" placeholder="أدخل رقم هاتفك..." value="<?php echo $row['contactno'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="dateOfBirth">تاريخ الميلاد</label>
+                  <input type="date" name="dob" value="<?php echo $row['dob'] ?>" required>
+                </div>
+                <div class="input-group">
+                  <label for="gender">الجنس</label>
+                  <input type="text" name="gender" placeholder="أدخل جنسك..." value="<?php echo $row['gender'] ?>" required>
+                </div>
+
+                <div class="input-group">
+                  <label for="residentialAddress">العنوان السكني</label>
+                  <input type="text" name="address" placeholder="أدخل عنوانك السكني..." value="<?php echo $row['address'] ?>" required>
+                </div>
+
+                <div class="button-container">
+                  <button type="submit" name="aProfile" class="btn btn-secondary">حفظ التغييرات</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="edit-profile-content-container-right-side">
+            <div class="password-container">
+              <div class="headline">
+                <h3>تغيير كلمة المرور</h3>
+              </div>
+              <div class="change-password-container">
+                <form method="post" action="../process/changePassword.php">
+                  <div class="input-group">
+                    <label for="new-password">كلمة المرور الجديدة</label>
+                    <input name="newPassword" type="password" minlength="6" placeholder="كلمة المرور الجديدة" required>
+                  </div>
+                  <div class="input-group">
+                    <label for="confirm-newPassword">تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" minlength="6" placeholder="تأكيد كلمة المرور الجديدة" required>
+                  </div>
+                  <button type="submit" name="aPassword" class="btn btn-secondary">تغيير كلمة المرور</button>
+                </form>
+              </div>
+            </div>
+            <div class="deactivate-container">
+              <div class="headline">
+                <h3>إلغاء تنشيط الحساب</h3>
+              </div>
+              <div class="deactivate-button-container">
+                <form action="../process/deactivate.php" method="post">
+                  <div class="button-container">
+                    <button type="submit" name="adminProfile" class="btn btn-secondary">إلغاء تنشيط الحساب</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+</body>
