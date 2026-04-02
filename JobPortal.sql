@@ -46,7 +46,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id_admin`, `password`, `fullname`, `profile_pic`, `email`, `createdat`, `gender`, `dob`, `address`, `role_id`, `contactno`) VALUES
-(1, '$2y$10$N/k4/DWuDzTXBrpiYDsO1.59tXkKQuLXcxB.eSrvdknLyMssxZYii', 'admin sabbir', '21560ff720ef5c73fa38ae6923adf1c5shreemangal.jpg', 'adminsabbir@gmail.com', '0000-00-00', 'Male', '1995-06-07', 'Dhaka', 3, '01510151265');
+(1, '$2y$10$N/k4/DWuDzTXBrpiYDsO1.59tXkKQuLXcxB.eSrvdknLyMssxZYii', 'admin tawheeb', '21560ff720ef5c73fa38ae6923adf1c5shreemangal.jpg', 'admintawheeb@gmail.com', '0000-00-00', 'Male', '1995-06-07', 'Dhaka', 3, '01510151265');
 
 -- --------------------------------------------------------
 
@@ -440,8 +440,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id_user`, `fullname`, `email`, `password`, `address`, `headline`, `role_id`, `city_id`, `state_id`, `contactno`, `education_id`, `dob`, `age`, `resume`, `hash`, `active`, `aboutme`, `skills`, `gender`, `profile_pic`, `createdat`) VALUES
-(8, 'Jawwad Al Sabbir', 'mdsabbirhosen926@gmail.com', '$2y$10$vqsDy25Rx1B/2n3Z/6KI..oTMF2AwAXwIZHwsfiSqw.lC2q71lhGm', 'Patuakhali Science and Technology University,Dumki-8602,Pirtola Bazar,Patuakhali.', 'Software Engineer', 1, 5, 1, '01710151265', 7, '1999-10-13', NULL, '9bbb5f8aa2c4d5ac9ef31dec610ba406New-York-Resume-Template-Creative.pdf', NULL, 0, 'I am a web developer.', 'HTML, CSS, javascript.', 'male', '9bbb5f8aa2c4d5ac9ef31dec610ba406IMG_8791.JPG', '2023-07-02'),
-(9, 'kallol', 'kallol@gmail.com', '$2y$10$.gbGBrPH41jG2TYanuPqc.YrNO/LEzUDrG14H54JOmZ9rz35jSpUm', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, 0, NULL, NULL, NULL, 'user.png', '2023-07-16'),
+INSERT INTO admin (fullname, email, password, role_id)
+VALUES (
+  'Tawheeb Al-Mahjari',
+  'tawheeb@gmail.com',
+  'HASHED_PASSWORD_HERE',
+  3
+);(9, 'kallol', 'kallol@gmail.com', '$2y$10$.gbGBrPH41jG2TYanuPqc.YrNO/LEzUDrG14H54JOmZ9rz35jSpUm', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, 0, NULL, NULL, NULL, 'user.png', '2023-07-16'),
 (10, 'Hasan Farazi', 'hasaanfarazi17@gmail.com', '$2y$10$Q6iEm.hgdXZunxa5WBjmlOJyyBfFJ1yK30KPvdP4y60JzbBQ0/1qu', 'Dumki,Patuakhali.', 'Entrepreauner', 1, 4, 1, '01736022148', 7, '2000-12-27', NULL, '50ccf2730e312c8f5d73f9eb1a400062Grace-ResumeViking-15-1.pdf', NULL, 0, 'i am a billionaire', 'speaking, influencing.', 'male', '50ccf2730e312c8f5d73f9eb1a400062Man-DRAWING-–-STEP-10.jpg', '2023-08-01');
 
 --
